@@ -51,6 +51,7 @@ var death_panel: PanelContainer
 var touch_layer: Control
 var touch_fire: Button
 var touch_jump: Button
+var touch_dash: Button
 
 func _ready() -> void:
 	rng.randomize()
@@ -221,6 +222,13 @@ func _create_ui() -> void:
 	touch_jump.size = Vector2(100.0, 55.0)
 	touch_jump.pressed.connect(func(): player.queue_jump())
 	touch_layer.add_child(touch_jump)
+	touch_dash = Button.new()
+	touch_dash.text = "DASH"
+	touch_dash.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	touch_dash.position = Vector2(-245.0, -165.0)
+	touch_dash.size = Vector2(100.0, 55.0)
+	touch_dash.button_down.connect(func(): player.queue_dash())
+	touch_layer.add_child(touch_dash)
 	var pause_button := Button.new()
 	pause_button.text = "II"
 	pause_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -292,6 +300,11 @@ func start_run() -> void:
 	player.pitch = 0.0
 	player.camera.rotation.x = 0.0
 	player.shot_cooldown = 0.0
+	player.dash_queued = false
+	player.dash_timer = 0.0
+	player.dash_cooldown = 0.0
+	player.gamepad_dash_held = false
+	touch_dash.disabled = false
 	player.death_timer = -1.0
 	state = "playing"
 	menu_panel.visible = false
@@ -324,6 +337,7 @@ func _start_stage() -> void:
 func _physics_process(delta: float) -> void:
 	if state != "playing":
 		return
+	touch_dash.disabled = player.dash_cooldown > 0.0
 	if clear_timer >= 0.0:
 		clear_timer -= delta
 		if clear_timer <= 0.0:

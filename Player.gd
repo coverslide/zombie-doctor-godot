@@ -10,6 +10,11 @@ var left_origin := Vector2.ZERO
 var touch_move := Vector2.ZERO
 var fire_held := false
 var jump_queued := false
+var dash_queued := false
+var dash_timer := 0.0
+var dash_cooldown := 0.0
+var dash_direction := Vector3.ZERO
+var gamepad_dash_held := false
 var death_timer := -1.0
 
 func configure(owner_game: Node3D) -> void:
@@ -45,6 +50,8 @@ func _unhandled_input(event: InputEvent) -> void:
 			game.toggle_pause()
 		elif event.keycode == KEY_SPACE or event.keycode == KEY_F:
 			jump_queued = true
+		elif event.keycode == KEY_SHIFT:
+			dash_queued = true
 	elif event is InputEventScreenTouch:
 		var touch_event := event as InputEventScreenTouch
 		var half := get_viewport().get_visible_rect().size.x * 0.5
@@ -76,6 +83,8 @@ func _physics_process(delta: float) -> void:
 	if not game or not game.is_playing():
 		return
 	shot_cooldown = maxf(0.0, shot_cooldown - delta)
+	dash_cooldown = maxf(0.0, dash_cooldown - delta)
+	dash_timer = maxf(0.0, dash_timer - delta)
 	var move_input := Vector2.ZERO
 	move_input.x = float(Input.is_key_pressed(KEY_D)) - float(Input.is_key_pressed(KEY_A))
 	move_input.y = float(Input.is_key_pressed(KEY_S)) - float(Input.is_key_pressed(KEY_W))
@@ -87,13 +96,28 @@ func _physics_process(delta: float) -> void:
 			_rotate_view(look * delta * 2.4)
 		if Input.is_joy_button_pressed(0, JOY_BUTTON_A):
 			jump_queued = true
+		var dash_pressed := Input.is_joy_button_pressed(0, JOY_BUTTON_B)
+		if dash_pressed and not gamepad_dash_held:
+			dash_queued = true
+		gamepad_dash_held = dash_pressed
+	else:
+		gamepad_dash_held = false
 	if move_input.length() > 1.0:
 		move_input = move_input.normalized()
 	var forward := -global_transform.basis.z
 	var right := global_transform.basis.x
 	var desired := (right * move_input.x + forward * -move_input.y) * 5.4
-	velocity.x = move_toward(velocity.x, desired.x, 55.0 * delta)
-	velocity.z = move_toward(velocity.z, desired.z, 55.0 * delta)
+	if dash_queued and dash_cooldown <= 0.0:
+		dash_direction = desired.normalized() if desired.length_squared() > 0.01 else forward
+		dash_timer = 0.22
+		dash_cooldown = 2.0
+	dash_queued = false
+	if dash_timer > 0.0:
+		velocity.x = dash_direction.x * 17.0
+		velocity.z = dash_direction.z * 17.0
+	else:
+		velocity.x = move_toward(velocity.x, desired.x, 55.0 * delta)
+		velocity.z = move_toward(velocity.z, desired.z, 55.0 * delta)
 	if is_on_floor():
 		velocity.y = 0.0
 		if jump_queued:
@@ -117,3 +141,6 @@ func set_fire_held(value: bool) -> void:
 
 func queue_jump() -> void:
 	jump_queued = true
+
+func queue_dash() -> void:
+	dash_queued = true

@@ -16,10 +16,10 @@ several seconds.
 
 ## Controls
 
-- Desktop: WASD to move, mouse to aim, left click to fire, Space to jump, Esc to pause.
-- Gamepad: left stick to move, right stick to aim, right trigger to fire, A to jump.
+- Desktop: WASD to move, mouse to aim, left click to fire, Space to jump, Left Shift to dash, Esc to pause.
+- Gamepad: left stick to move, right stick to aim, right trigger to fire, A to jump, B to dash.
 - Touch: drag on the left half to move, drag on the right to aim, use the Fire and
-  Jump buttons. The pause button is at the upper right.
+  Jump and Dash buttons. The pause button is at the upper right.
 
 ## Current port
 
