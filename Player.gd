@@ -33,6 +33,8 @@ func configure(owner_game: Node3D) -> void:
 		var weapon = slingshot.instantiate()
 		camera.add_child(weapon)
 		weapon.position = Vector3(0.35, -0.38, -0.7)
+		# The model's forward axis is +X; turn it toward the camera's -Z aim axis.
+		weapon.rotation = Vector3(-0.18, PI * 0.5, -0.2)
 		weapon.scale = Vector3.ONE * 0.24
 
 func _unhandled_input(event: InputEvent) -> void:
