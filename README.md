@@ -11,8 +11,8 @@ make web
 make deploy
 ```
 
-`make web` writes `build/html/godot.html`. `make deploy` copies `godot.html`
-and its companion files beside the current web game and writes Brotli sidecars.
+`make web` writes `build/html/index.html`. `make deploy` copies `index.html`
+and its companion files into the parent directory and writes Brotli sidecars.
 `make check` checks the scene headlessly; `make clean` removes only `build/`.
 Godot 4.7 export templates and the `brotli` command are required. The first
 asset import can take several seconds.
