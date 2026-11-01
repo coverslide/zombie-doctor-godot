@@ -4,15 +4,18 @@ This is a standalone Godot game repository. The runtime models and audio are
 copied into `assets/` and `audio/`; no files or symlinks from the Vite project
 are required. Open `project.godot` in Godot 4.7 or newer and run `Main.tscn`.
 
-To export the Web build to the parent game directory, run:
+To build locally and deploy the Web export to the parent game directory, run:
 
 ```sh
-./export.sh
+make web
+make deploy
 ```
 
-The export writes `../godot.html` and its companion files beside the current
-web game. Godot 4.7 export templates are required. The first import can take
-several seconds.
+`make web` writes `build/html/godot.html`. `make deploy` copies `godot.html`
+and its companion files beside the current web game and writes Brotli sidecars.
+`make check` checks the scene headlessly; `make clean` removes only `build/`.
+Godot 4.7 export templates and the `brotli` command are required. The first
+asset import can take several seconds.
 
 ## Controls
 
